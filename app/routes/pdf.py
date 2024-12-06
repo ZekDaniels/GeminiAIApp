@@ -1,9 +1,11 @@
 from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
 from app.services.pdf_service import process_pdf
-from app.schemas.pdf_schemas import UploadPDFResponse, ChatResponse
 from app.services.chat_service import get_gemini_response
+from app.schemas.pdf_schemas import UploadPDFResponse, ChatResponse
 from app.db.session import get_db
 from sqlalchemy.orm import Session
+
+from app.models.pdf import PDF
 
 router = APIRouter(
     prefix="/v1/pdf",
