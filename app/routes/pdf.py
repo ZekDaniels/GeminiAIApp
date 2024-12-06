@@ -1,14 +1,45 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
 from app.services.pdf_service import process_pdf
+from app.schemas.pdf_schemas import UploadPDFResponse, ChatResponse
+from app.services.chat_service import get_gemini_response
+from app.db.session import get_db
+from sqlalchemy.orm import Session
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/v1/pdf",
+    tags=["PDF"],
+)
 
-@router.post("/v1/pdf")
-async def upload_pdf(file: UploadFile = File(...)):
-    pdf_id = await process_pdf(file)
-    return {"pdf_id": pdf_id}
+@router.post("/", response_model=UploadPDFResponse)
+async def upload_pdf(file: UploadFile = File(...), db: Session = Depends(get_db)):
+    """
+    Upload a PDF document. The PDF file is processed, and a unique ID is generated.
+    
+    - **file**: The PDF file to be uploaded.
+    
+    Returns a unique identifier (`pdf_id`) for the uploaded PDF.
+    """
+    pdf_id = await process_pdf(file, db)
+    return UploadPDFResponse(pdf_id=pdf_id, filename=file.filename)
 
-@router.post("/v1/chat/{pdf_id}")
-async def chat_with_pdf(pdf_id: int, message: str):
-    # Mock chat response
-    return {"response": f"Answer based on PDF {pdf_id}"}
+@router.post("/chat/{pdf_id}", response_model=ChatResponse)
+async def chat_with_pdf(pdf_id: int, message: str, db: Session = Depends(get_db)):
+    """
+    Chat with the content of a PDF document. The user can send queries related to the PDF.
+    
+    - **pdf_id**: The unique identifier of the PDF.
+    - **message**: The query message to ask the AI about the PDF content.
+    
+    Returns an AI-generated response based on the content of the PDF.
+    """
+    try:
+        # Retrieve PDF content from the database
+        pdf_content = db.query(PDF).filter(PDF.id == pdf_id).first()
+        if not pdf_content:
+            raise HTTPException(status_code=404, detail="PDF not found.")
+
+        # Query Gemini API for response
+        response = get_gemini_response(pdf_content.content, message)
+        return ChatResponse(response=response['answer'])
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

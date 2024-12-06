@@ -1,8 +1,8 @@
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
-    gemini_api_key: str
-    database_url: str = "sqlite:///./pdf_chat.db"
+    GEMINI_API_KEY: str
+    DATABASE_URL: str = "sqlite:///./pdf_chat.db"
 
     class Config:
         env_file = ".env"

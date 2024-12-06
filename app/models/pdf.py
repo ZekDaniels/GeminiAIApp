@@ -1,7 +1,5 @@
 from sqlalchemy import Column, Integer, String, Text
-from sqlalchemy.ext.declarative import declarative_base
-
-Base = declarative_base()
+from app.db.session import Base
 
 class PDF(Base):
     __tablename__ = "pdfs"
@@ -9,4 +7,4 @@ class PDF(Base):
     id = Column(Integer, primary_key=True, index=True)
     filename = Column(String, index=True)
     content = Column(Text)
-    page_count = Column(Integer)
+    page_count = Column(Integer)  # Make sure this field is defined if it's used
