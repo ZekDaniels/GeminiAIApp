@@ -9,12 +9,12 @@ from app.services.chat_service import get_gemini_response
 from app.db.session import get_db
 
 router = APIRouter(
-    prefix="/v1/pdf",
+    prefix="/v1/chat",
     tags=["Chat"],
 )
 pdf_service = PDFService()
 
-@router.post("/chat/{pdf_id}", response_model=ChatResponse)
+@router.post("/{pdf_id}", response_model=ChatResponse)
 async def chat_with_pdf(pdf_id: int, message: str, db: Session = Depends(get_db)):
     """
     Chat with the content of a PDF document. The user can send queries related to the PDF.

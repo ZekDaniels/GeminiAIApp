@@ -76,26 +76,3 @@ async def get_pdf_detail(pdf_id: int = Path(..., title="PDF ID", description="Th
         raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
-
-
-@router.post("/chat/{pdf_id}", response_model=ChatResponse)
-async def chat_with_pdf(pdf_id: int, message: str, db: Session = Depends(get_db)):
-    """
-    Chat with the content of a PDF document. The user can send queries related to the PDF.
-    
-    - **pdf_id**: The unique identifier of the PDF.
-    - **message**: The query message to ask the AI about the PDF content.
-    
-    Returns an AI-generated response based on the content of the PDF.
-    """
-    try:
-        # Retrieve PDF content from the database
-        pdf_content = db.query(PDF).filter(PDF.id == pdf_id).first()
-        if not pdf_content:
-            raise HTTPException(status_code=404, detail="PDF not found.")
-
-        # Query Gemini API for response
-        response = get_gemini_response(pdf_content.content, message)
-        return ChatResponse(response=response['answer'])
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))

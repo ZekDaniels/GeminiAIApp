@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routes import pdf
+from app.routes import pdf, chat
 
 app = FastAPI(
     title="GeminiAIApp",
@@ -9,10 +9,4 @@ app = FastAPI(
 
 # Register routes
 app.include_router(pdf.router)
-
-@app.get("/", tags=["General"])
-def read_root():
-    """
-    Root endpoint. API'nin çalıştığını kontrol etmek için kullanılır.
-    """
-    return {"message": "Welcome to the PDF Chat API"}
+app.include_router(chat.router)
