@@ -115,7 +115,7 @@ class PDFService:
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Error listing PDFs: {str(e)}")
 
-    def get_pdf_detail(self, pdf_id: int, db: Session) -> PDF:
+    def get_pdf_by_id(self, pdf_id: int, db: Session) -> PDF:
         """
         Retrieves the details of a single PDF by its ID.
 

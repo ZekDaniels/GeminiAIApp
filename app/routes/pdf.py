@@ -63,14 +63,14 @@ async def list_pdfs(db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
     
 @router.get("/{pdf_id}", response_model=PDFResponse)
-async def get_pdf_detail(pdf_id: int = Path(..., title="PDF ID", description="The unique ID of the PDF to retrieve"), db: Session = Depends(get_db)):
+async def get_pdf_by_id(pdf_id: int = Path(..., title="PDF ID", description="The unique ID of the PDF to retrieve"), db: Session = Depends(get_db)):
     """
     Retrieve details of a specific PDF.
 
     - **pdf_id**: Unique identifier of the PDF to retrieve.
     """
     try:
-        pdf_detail = pdf_service.get_pdf_detail(pdf_id, db)
+        pdf_detail = pdf_service.get_pdf_by_id(pdf_id, db)
         return pdf_detail
     except HTTPException as e:
         raise e
