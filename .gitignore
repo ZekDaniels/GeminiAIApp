@@ -58,6 +58,9 @@ cover/
 #Database stuff:
 *.db
 
+#Uploads:
+uploads/
+
 # Django stuff:
 *.log
 local_settings.py
