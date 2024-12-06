@@ -8,7 +8,7 @@ def get_gemini_response(pdf_content, query):
     Query the Gemini API with the PDF content and user query, and return the response.
     """
     try:
-        headers = {"Authorization": f"Bearer {settings.gemini_api_key}"}
+        headers = {"Authorization": f"Bearer {settings.GEMINI_API_KEY}"}
         payload = {"content": pdf_content, "query": query}
         response = requests.post("https://api.gemini.example.com/query", json=payload, headers=headers)
         
