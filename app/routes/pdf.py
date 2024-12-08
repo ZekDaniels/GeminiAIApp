@@ -2,10 +2,8 @@ from fastapi import APIRouter, UploadFile, File, Depends, HTTPException, Path
 from sqlalchemy.orm import Session
 from typing import List
 
-from app.schemas.pdf_schemas import UploadPDFResponse, PDFResponse, ChatResponse
-from app.models.pdf import PDF
+from app.schemas.pdf_schemas import UploadPDFResponse, PDFResponse
 from app.services.pdf_service import PDFService
-from app.services.chat_service import get_gemini_response
 from app.db.session import get_db
 
 router = APIRouter(
