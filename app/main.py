@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
-from app.routes import pdf, chat
+from app.routes import chat_route, pdf_route
 from app.errors.pdf_exceptions import PDFNotFoundException
 
 
@@ -17,5 +17,5 @@ async def pdf_not_found_exception_handler(request: Request, exc: PDFNotFoundExce
     )
 
 # Register routes
-app.include_router(pdf.router)
-app.include_router(chat.router)
+app.include_router(pdf_route.router)
+app.include_router(chat_route.router)
