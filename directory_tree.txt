@@ -1,0 +1,53 @@
+├── .env
+├── .env.example
+├── .gitignore
+├── LICENSE
+├── README.md
+├── alembic
+│   ├── README
+│   ├── env.py
+│   ├── script.py.mako
+│   └── versions
+│       └── 798d834c7f53_initial_migration.py
+├── alembic.ini
+├── app
+│   ├── __init.py
+│   ├── core
+│   │   ├── __init.py
+│   │   └── config.py
+│   ├── db
+│   │   └── session.py
+│   ├── main.py
+│   ├── models
+│   │   ├── __init.py
+│   │   └── pdf.py
+│   ├── routes
+│   │   ├── __init.py
+│   │   ├── chat.py
+│   │   └── pdf.py
+│   ├── schemas
+│   │   ├── __init__.py
+│   │   └── pdf_schemas.py
+│   ├── services
+│   │   ├── __init.py
+│   │   ├── chat_service.py
+│   │   └── pdf_service.py
+│   └── utils
+│       ├── __init.py
+│       ├── file_utils.py
+│       └── logging.py
+├── directory_tree.txt
+├── map.py
+├── pdf_chat.db
+├── requirements.txt
+├── tests
+│   ├── __init.py
+│   ├── pdf
+│   │   ├── __init.py
+│   │   ├── test_routes.py
+│   │   └── test_services.py
+│   ├── test_routes.py
+│   └── test_services.py
+└── uploads
+    └── pdf_files
+        └── SevenApps_Take_Home_Study_Case.pdf

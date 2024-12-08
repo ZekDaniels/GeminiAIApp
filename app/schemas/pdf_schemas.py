@@ -1,19 +1,21 @@
-# app/schemas/pdf_schemas.py
-
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 class UploadPDFResponse(BaseModel):
     pdf_id: int
     filename: str
+
+    model_config = ConfigDict(orm_mode=True)
+
 
 class PDFResponse(BaseModel):
     id: int
     filename: str
     content: str
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(orm_mode=True, from_attributes=True)
 
 
 class ChatResponse(BaseModel):
     response: str
+
+    model_config = ConfigDict()

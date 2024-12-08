@@ -13,6 +13,7 @@ router = APIRouter(
     tags=["PDF"],
 )
 pdf_service = PDFService()
+
 @router.post("/", response_model=UploadPDFResponse)
 async def upload_pdf(file: UploadFile = File(...), db: Session = Depends(get_db)):
     """

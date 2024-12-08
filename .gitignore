@@ -60,6 +60,7 @@ cover/
 
 #Uploads:
 uploads/
+test_uploads/
 
 # Django stuff:
 *.log

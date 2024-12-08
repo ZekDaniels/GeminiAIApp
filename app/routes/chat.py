@@ -26,12 +26,10 @@ async def chat_with_pdf(pdf_id: int, message: str, db: Session = Depends(get_db)
     """
     try:
         # Retrieve PDF content from the database
-        pdf_content = db.query(PDF).filter(PDF.id == pdf_id).first()
-        if not pdf_content:
-            raise HTTPException(status_code=404, detail="PDF not found.")
+        pdf_record = pdf_service.get_pdf_by_id(pdf_id, db)
 
         # Query Gemini API for response
-        response = get_gemini_response(pdf_content.content, message)
+        response = get_gemini_response(pdf_record.content, message)
         return ChatResponse(response=response['answer'])
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

@@ -16,3 +16,8 @@ A FastAPI-based backend to upload, process PDFs, and chat using LLMs.
 - `POST /v1/chat/{pdf_id}`: Chat with the content of the uploaded PDF.
 
 
+pytest
+pytest tests/pdf
+pytest tests/pdf/test_services.py
+pytest tests/pdf/test_services.py::test_save_pdf_to_disk
+
