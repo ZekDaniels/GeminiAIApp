@@ -1,8 +1,9 @@
 import os
 import pdfplumber
-from fastapi import HTTPException, UploadFile
+from fastapi import HTTPException, UploadFile, status
 from sqlalchemy.orm import Session
 from app.models.pdf import PDF
+from app.errors.pdf_exceptions import PDFNotFoundException
 from shutil import copyfileobj
 
 class PDFService:
@@ -28,7 +29,7 @@ class PDFService:
                 copyfileobj(file.file, buffer)
             return file_path
         except Exception as e:
-            raise HTTPException(status_code=400, detail=f"Error saving PDF to disk: {str(e)}")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Error saving PDF to disk: {str(e)}")
 
     def extract_text_from_pdf(self, file_path: str) -> str:
         """
@@ -41,10 +42,10 @@ class PDFService:
             with pdfplumber.open(file_path) as pdf:
                 content = " ".join(page.extract_text() for page in pdf.pages if page.extract_text())
             if not content:
-                raise HTTPException(status_code=400, detail="No text found in the PDF.")
+                raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="No text found in the PDF.")
             return content
         except Exception as e:
-            raise HTTPException(status_code=400, detail=f"Error extracting text from PDF: {str(e)}")
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, detail=f"Error extracting text from PDF: {str(e)}")
 
     def save_pdf_record(self, filename: str, content: str, db: Session) -> int:
         """
@@ -62,7 +63,7 @@ class PDFService:
             db.refresh(pdf_record)  # Refresh to get the ID
             return pdf_record.id
         except Exception as e:
-            raise HTTPException(status_code=400, detail=f"Error saving PDF record: {str(e)}")
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, detail=f"Error saving PDF record: {str(e)}")
 
     def process_pdf(self, file: UploadFile, db: Session) -> int:
         """
@@ -86,9 +87,7 @@ class PDFService:
         """
         try:
             # Retrieve the PDF record from the database
-            pdf_record = db.query(PDF).filter(PDF.id == pdf_id).first()
-            if not pdf_record:
-                raise HTTPException(status_code=404, detail="PDF not found.")
+            pdf_record = self.get_pdf_by_id(pdf_id, db)
 
             # Construct the file path
             file_path = os.path.join(self.upload_dir, pdf_record.filename)
@@ -100,8 +99,11 @@ class PDFService:
             # Delete the record from the database
             db.delete(pdf_record)
             db.commit()
+
+        except PDFNotFoundException as e:
+            raise e
         except Exception as e:
-            raise HTTPException(status_code=400, detail=f"Error deleting PDF: {str(e)}")
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, detail=f"Error deleting PDF: {str(e)}")
 
     def list_pdfs(self, db: Session) -> list:
         """
@@ -113,7 +115,7 @@ class PDFService:
         try:
             return db.query(PDF).all()
         except Exception as e:
-            raise HTTPException(status_code=400, detail=f"Error listing PDFs: {str(e)}")
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, detail=f"Error listing PDFs: {str(e)}")
 
     def get_pdf_by_id(self, pdf_id: int, db: Session) -> PDF:
         """
@@ -126,7 +128,14 @@ class PDFService:
         try:
             pdf_record = db.query(PDF).filter(PDF.id == pdf_id).first()
             if not pdf_record:
-                raise HTTPException(status_code=404, detail="PDF not found.")
+                raise PDFNotFoundException(pdf_id)
+            
             return pdf_record
+        
+        except PDFNotFoundException as e:
+            raise e
         except Exception as e:
-            raise HTTPException(status_code=400, detail=f"Error retrieving PDF detail: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Error retrieving PDF detail: {str(e)}"
+            )

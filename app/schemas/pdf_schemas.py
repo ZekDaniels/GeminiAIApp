@@ -4,7 +4,7 @@ class UploadPDFResponse(BaseModel):
     pdf_id: int
     filename: str
 
-    model_config = ConfigDict(orm_mode=True)
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PDFResponse(BaseModel):
@@ -12,7 +12,7 @@ class PDFResponse(BaseModel):
     filename: str
     content: str
 
-    model_config = ConfigDict(orm_mode=True, from_attributes=True)
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ChatResponse(BaseModel):

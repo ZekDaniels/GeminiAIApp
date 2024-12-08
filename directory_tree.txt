@@ -39,7 +39,10 @@
 ├── directory_tree.txt
 ├── map.py
 ├── pdf_chat.db
+├── pytest.ini
 ├── requirements.txt
+├── test_uploads
+│   └── test.pdf
 ├── tests
 │   ├── __init.py
 │   ├── pdf
@@ -50,4 +53,4 @@
 │   └── test_services.py
 └── uploads
     └── pdf_files
-        └── SevenApps_Take_Home_Study_Case.pdf
+        └── test.pdf

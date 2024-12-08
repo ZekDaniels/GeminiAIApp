@@ -15,6 +15,7 @@ fileConfig(config.config_file_name)
 
 # Import your models to make sure they are registered in Base.metadata
 from app.models.pdf import PDF  # Import your model to register its metadata
+from app.models.chat import ConversationHistory  # Import your model to register its metadata
 
 # Access the metadata object for all models
 target_metadata = Base.metadata
