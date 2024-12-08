@@ -13,6 +13,7 @@ router = APIRouter(
 )
 pdf_service = PDFService()
 
+
 @router.post("/", response_model=UploadPDFResponse)
 async def upload_pdf(file: UploadFile = File(...), db: Session = Depends(get_db)):
     """
@@ -29,7 +30,35 @@ async def upload_pdf(file: UploadFile = File(...), db: Session = Depends(get_db)
         raise e
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Internal Server Error: {str(e)}")
-    
+
+
+@router.put("/{pdf_id}", response_model=UploadPDFResponse)
+async def update_pdf(
+    pdf_id: int = Path(..., title="PDF ID", description="The unique ID of the PDF to update"),
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+):
+    """
+    Update an existing PDF document with a new file.
+
+    - **pdf_id**: The unique ID of the PDF to update.
+    - **file**: The new PDF file to replace the old one.
+
+    Returns the updated PDF metadata.
+    """
+    try:
+        updated_pdf_id = pdf_service.update_pdf(pdf_id, file, db)
+        return UploadPDFResponse(pdf_id=updated_pdf_id, filename=file.filename)
+    except PDFNotFoundException as e:
+        raise e
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Internal Server Error: {str(e)}"
+        )
+
 
 @router.delete("/{pdf_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_pdf(pdf_id: int = Path(..., title="PDF ID", description="The unique ID of the PDF to delete"), db: Session = Depends(get_db)):
@@ -63,7 +92,8 @@ async def list_pdfs(db: Session = Depends(get_db)):
         raise e
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Internal Server Error: {str(e)}")
-    
+
+
 @router.get("/{pdf_id}", response_model=PDFResponse)
 async def get_pdf_by_id(pdf_id: int = Path(..., title="PDF ID", description="The unique ID of the PDF to retrieve"), db: Session = Depends(get_db)):
     """

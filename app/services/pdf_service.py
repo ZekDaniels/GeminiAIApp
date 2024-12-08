@@ -78,6 +78,47 @@ class PDFService:
         pdf_id = self.save_pdf_record(file.filename, content, db)
         return pdf_id
     
+    def update_pdf(self, pdf_id: int, file: UploadFile, db: Session) -> int:
+        """
+        Update an existing PDF file and its database record.
+
+        :param pdf_id: The unique ID of the PDF to update.
+        :param file: The new uploaded PDF file.
+        :param db: SQLAlchemy database session.
+        :return: The unique ID of the updated PDF.
+        """
+        try:
+            # Retrieve the existing PDF record
+            pdf_record = self.get_pdf_by_id(pdf_id, db)
+
+            # Delete the old file from disk
+            old_file_path = os.path.join(self.upload_dir, pdf_record.filename)
+            if os.path.exists(old_file_path):
+                os.remove(old_file_path)
+
+            # Save the new PDF file to disk
+            new_file_path = self.save_pdf_to_disk(file)
+
+            # Extract text from the new PDF file
+            new_content = self.extract_text_from_pdf(new_file_path)
+
+            # Update the database record
+            pdf_record.filename = file.filename
+            pdf_record.content = new_content
+            db.commit()
+            db.refresh(pdf_record)
+
+            return pdf_record.id
+
+        except PDFNotFoundException as e:
+            raise e
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Error updating PDF: {str(e)}"
+            )
+
+    
     def delete_pdf(self, pdf_id: int, db: Session) -> None:
         """
         Deletes a PDF record from the database and its associated file from the disk.
