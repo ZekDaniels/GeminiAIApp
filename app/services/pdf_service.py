@@ -2,38 +2,87 @@ import os
 import re
 import asyncio
 import pdfplumber
-from fastapi import UploadFile
+import aiofiles
+from fastapi import UploadFile, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 from app.models.pdf import PDF
 from app.errors.pdf_exceptions import PDFNotFoundException, PDFExtractionError
 from app.decorators.pdf_handle_errors import handle_service_errors
-import aiofiles
+import uuid
 
 
 class PDFService:
-    def __init__(self, upload_dir: str = "uploads/pdf_files"):
-        """Initialize the service and create the upload directory if not exists."""
-        self.upload_dir = upload_dir
+    UPLOAD_DIR = "uploads/pdf_files"
+    MAX_FILE_SIZE_MB = 10  # Maximum file size in megabytes
+    ALLOWED_EXTENSIONS = {".pdf"}  # Allowed file extensions
+
+    def __init__(self):
+        """Initialize the service and create the upload directory if it doesn't exist."""
+        self.upload_dir = self.UPLOAD_DIR
         os.makedirs(self.upload_dir, exist_ok=True)
 
     @handle_service_errors
     async def process_pdf(self, file: UploadFile, db: AsyncSession) -> int:
-        """Process a PDF file: save to disk, extract text, and save to database."""
+        """
+        Process a PDF file: validate, save to disk, extract text, and save to database.
+        """
+        self.validate_file(file)
         file_path = await self.save_pdf_to_disk(file)
         pdf_data = await self.extract_text_from_pdf(file_path)
         preprocessed_content = self.preprocess_text(pdf_data["content"])
-        pdf_id = await self.save_pdf_record(file.filename, preprocessed_content, pdf_data["page_count"], db)
+        pdf_id = await self.save_pdf_record(
+            filename=self.generate_unique_filename(file.filename),
+            content=preprocessed_content,
+            page_count=pdf_data["page_count"],
+            db=db
+        )
         return pdf_id
+
+    def validate_file(self, file: UploadFile):
+        """
+        Validate the uploaded file type and size.
+
+        Raises:
+            HTTPException: If the file is invalid (wrong type or too large).
+        """
+        # Validate file extension
+        file_extension = os.path.splitext(file.filename)[1].lower()
+        if file_extension not in self.ALLOWED_EXTENSIONS:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid file type. Allowed types: {', '.join(self.ALLOWED_EXTENSIONS)}"
+            )
+
+        # Validate file size
+        file.file.seek(0, os.SEEK_END)  # Move to the end of the file
+        file_size_mb = file.file.tell() / (1024 * 1024)  # File size in MB
+        file.file.seek(0)  # Reset the file pointer for further operations
+        if file_size_mb > self.MAX_FILE_SIZE_MB:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"File size exceeds the limit of {self.MAX_FILE_SIZE_MB} MB"
+            )
+
+    def generate_unique_filename(self, original_filename: str) -> str:
+        """
+        Generate a unique identifier for the PDF file based on the original filename.
+        """
+        unique_id = uuid.uuid4().hex  # Generate a unique ID
+        file_extension = os.path.splitext(original_filename)[1]
+        return f"{unique_id}{file_extension}"
 
     @handle_service_errors
     async def save_pdf_to_disk(self, file: UploadFile) -> str:
-        """Save an uploaded PDF file to disk asynchronously."""
-        file_path = os.path.join(self.upload_dir, file.filename)
+        """
+        Save an uploaded PDF file to disk asynchronously with a unique filename.
+        """
+        unique_filename = self.generate_unique_filename(file.filename)
+        file_path = os.path.join(self.upload_dir, unique_filename)
         async with aiofiles.open(file_path, "wb") as buffer:
             content = await file.read()  # Use async read
-            await buffer.write(content)
+            await buffer.write(content)  # Async write
         return file_path
 
     @handle_service_errors
@@ -42,7 +91,7 @@ class PDFService:
         return await asyncio.to_thread(self._sync_extract_text, file_path)
 
     def _sync_extract_text(self, file_path: str) -> dict:
-        """Synchronous helper method for extracting text using pdfplumber."""
+        """Helper method for synchronous text extraction using pdfplumber."""
         with pdfplumber.open(file_path) as pdf:
             page_texts = [page.extract_text() for page in pdf.pages]
             content = " ".join(filter(None, page_texts))
