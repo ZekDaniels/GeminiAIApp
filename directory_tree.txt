@@ -8,7 +8,8 @@
 │   ├── env.py
 │   ├── script.py.mako
 │   └── versions
-│       └── 798d834c7f53_initial_migration.py
+│       ├── 02db9a3fb71d_pdf_datetime.py
+│       └── 295024eb1dc6_initial.py
 ├── alembic.ini
 ├── app
 │   ├── __init.py
@@ -17,16 +18,20 @@
 │   │   └── config.py
 │   ├── db
 │   │   └── session.py
+│   ├── errors
+│   │   └── pdf_exceptions.py
 │   ├── main.py
 │   ├── models
 │   │   ├── __init.py
+│   │   ├── chat.py
 │   │   └── pdf.py
 │   ├── routes
 │   │   ├── __init.py
-│   │   ├── chat.py
-│   │   └── pdf.py
+│   │   ├── chat_route.py
+│   │   └── pdf_route.py
 │   ├── schemas
 │   │   ├── __init__.py
+│   │   ├── chat_schemas.py
 │   │   └── pdf_schemas.py
 │   ├── services
 │   │   ├── __init.py
@@ -53,4 +58,5 @@
 │   └── test_services.py
 └── uploads
     └── pdf_files
+        ├── 2024CV (1).pdf
         └── test.pdf

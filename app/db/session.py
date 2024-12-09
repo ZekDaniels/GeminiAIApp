@@ -1,18 +1,26 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from app.core.config import settings
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import sessionmaker, declarative_base
 
-Base = declarative_base()  # This is the base for your models, and all models should inherit from it
+# Base class for models
+Base = declarative_base()
 
-# Create an engine and session factory
-engine = create_engine(settings.DATABASE_URL, connect_args={"check_same_thread": False})  # for SQLite
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# Define the database URL
+DATABASE_URL = "sqlite+aiosqlite:///./pdf_chat.db"
 
-# Dependency to get the session
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+# Create the async engine
+engine = create_async_engine(DATABASE_URL, echo=True)
+
+# Create the async session factory
+AsyncSessionLocal = sessionmaker(
+    bind=engine,
+    class_=AsyncSession,
+    expire_on_commit=False
+)
+
+# Dependency to get the async database session
+async def get_db() -> AsyncSession:
+    """
+    Dependency to get an AsyncSession for database operations.
+    """
+    async with AsyncSessionLocal() as session:
+        yield session

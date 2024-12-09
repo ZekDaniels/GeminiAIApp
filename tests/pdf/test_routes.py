@@ -13,7 +13,7 @@ def mock_pdf_service(mocker):
     Mock PDFService methods for testing.
     """
     mock_service = MagicMock(spec=PDFService)
-    mocker.patch("app.routes.pdf.pdf_service", mock_service)
+    mocker.patch("app.routes.pdf_route.pdf_service", mock_service)
     return mock_service
 
 
