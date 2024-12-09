@@ -6,6 +6,7 @@ from sqlalchemy.future import select
 from app.services.pdf_service import PDFService
 from app.models.chat import ConversationHistory
 from app.errors.chat_exceptions import ChatServiceException
+from app.core.config import settings  # Import settings to get database URL
 
 
 class ChatService:
@@ -16,7 +17,7 @@ class ChatService:
         Raises:
             ValueError: If the GEMINI_API_KEY environment variable is not set.
         """
-        api_key = os.getenv("GEMINI_API_KEY")
+        api_key = settings.GEMINI_API_KEY
         if not api_key:
             raise ValueError("GEMINI_API_KEY environment variable is not set.")
         genai.configure(api_key=api_key)

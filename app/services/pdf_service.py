@@ -3,6 +3,7 @@ import re
 import asyncio
 import pdfplumber
 import aiofiles
+import uuid
 from fastapi import UploadFile, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -10,12 +11,12 @@ from sqlalchemy.orm import selectinload
 from app.models.pdf import PDF
 from app.errors.pdf_exceptions import PDFNotFoundException, PDFExtractionError
 from app.decorators.pdf_handle_errors import handle_service_errors
-import uuid
+from app.core.config import settings  # Import settings to get database URL
 
 
 class PDFService:
     UPLOAD_DIR = "uploads/pdf_files"
-    MAX_FILE_SIZE_MB = 10  # Maximum file size in megabytes
+    MAX_FILE_SIZE_MB = settings.MAX_FILE_SIZE_MB  # Maximum file size in megabytes
     ALLOWED_EXTENSIONS = {".pdf"}  # Allowed file extensions
 
     def __init__(self):
@@ -121,6 +122,9 @@ class PDFService:
     async def update_pdf(self, pdf_id: int, file: UploadFile, db: AsyncSession) -> int:
         """Update an existing PDF record and file."""
         pdf_record = await self.get_pdf_by_id(pdf_id, db)
+
+        # Validate the uploaded file
+        self.validate_file(file)
 
         # Delete the old file
         old_file_path = os.path.join(self.upload_dir, pdf_record.filename)
