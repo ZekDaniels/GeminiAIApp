@@ -1,20 +1,19 @@
-from fastapi import FastAPI, Request, status
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI
+from app.core.config import settings
 from app.routes import chat_route, pdf_route
-from app.errors.pdf_exceptions import PDFNotFoundException
-
+from app.utils.error_handling import setup_exception_handling
 
 app = FastAPI(
     title="GeminiAIApp",
     description="Bu API, PDF yükleme ve sohbet özelliklerini sağlar.",
     version="1.0.0",
 )
-@app.exception_handler(PDFNotFoundException)
-async def pdf_not_found_exception_handler(request: Request, exc: PDFNotFoundException):
-    return JSONResponse(
-        status_code=status.HTTP_404_NOT_FOUND,
-        content={"message": exc.message},
-    )
+
+setup_exception_handling(app)
+if settings.debug:
+    @app.get("/debug-info")
+    async def debug_info():
+        return {"message": "Debugging is enabled", "log_level": settings.log_level}
 
 # Register routes
 app.include_router(pdf_route.router)

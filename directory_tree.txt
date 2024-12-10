@@ -8,8 +8,7 @@
 │   ├── env.py
 │   ├── script.py.mako
 │   └── versions
-│       ├── 02db9a3fb71d_pdf_datetime.py
-│       └── 295024eb1dc6_initial.py
+│       └── c3aade5b0fac_initial.py
 ├── alembic.ini
 ├── app
 │   ├── __init.py
@@ -18,7 +17,11 @@
 │   │   └── config.py
 │   ├── db
 │   │   └── session.py
+│   ├── decorators
+│   │   ├── __init__.py
+│   │   └── pdf_handle_errors.py
 │   ├── errors
+│   │   ├── chat_exceptions.py
 │   │   └── pdf_exceptions.py
 │   ├── main.py
 │   ├── models
@@ -39,24 +42,24 @@
 │   │   └── pdf_service.py
 │   └── utils
 │       ├── __init.py
-│       ├── file_utils.py
 │       └── logging.py
 ├── directory_tree.txt
 ├── map.py
 ├── pdf_chat.db
 ├── pytest.ini
 ├── requirements.txt
+├── test.db
 ├── test_uploads
 │   └── test.pdf
 ├── tests
 │   ├── __init.py
-│   ├── pdf
-│   │   ├── __init.py
-│   │   ├── test_routes.py
-│   │   └── test_services.py
-│   ├── test_routes.py
-│   └── test_services.py
+│   └── pdf
+│       ├── __init.py
+│       ├── test_routes.py
+│       └── test_services.py
 └── uploads
     └── pdf_files
-        ├── 2024CV (1).pdf
+        ├── 107.pdf
+        ├── 4a4ea1227be54036810bcf0c2dab606f.pdf
+        ├── 57adbdcccb07417b840dbc97fc46b686.pdf
         └── test.pdf

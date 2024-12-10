@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.db.session import Base
 from enum import Enum as PyEnum  # Enum'ı SQLAlchemy ile karışmaması için yeniden adlandırıyoruz.
+from app.models.chat import ConversationHistory
 
 class ProcessingStatus(str, PyEnum):
     PROCESSED = "Processed"
