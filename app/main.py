@@ -10,7 +10,7 @@ app = FastAPI(
 )
 
 setup_exception_handling(app)
-setup_logging()
+# setup_logging()
 if settings.debug:
     @app.get("/debug-info")
     async def debug_info():
