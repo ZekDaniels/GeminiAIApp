@@ -13,7 +13,6 @@ def setup_logging():
     """
     log_dir = "logs"
     os.makedirs(log_dir, exist_ok=True)  # Ensure the logs directory exists
-
     logging_config = {
         "version": 1,
         "disable_existing_loggers": False,

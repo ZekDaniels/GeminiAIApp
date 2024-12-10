@@ -8,7 +8,7 @@
 │   ├── env.py
 │   ├── script.py.mako
 │   └── versions
-│       └── ce821c6d70d2_initial.py
+│       └── f0f33c7efa6a_initial.py
 ├── alembic.ini
 ├── app
 │   ├── __init.py
@@ -46,6 +46,9 @@
 │       ├── __init.py
 │       ├── error_handling.py
 │       └── logging.py
+├── directory_tree.txt
+├── logs
+│   └── app.log
 ├── map.py
 ├── pdf_chat.db
 ├── pytest.ini
@@ -65,5 +68,7 @@
         ├── 13e064acef0740a6a485f8e15ab4e8ba.pdf
         ├── 4a4ea1227be54036810bcf0c2dab606f.pdf
         ├── 57adbdcccb07417b840dbc97fc46b686.pdf
+        ├── 7f2802f5c1f94b93b13645fb3ab94902.pdf
         ├── bea6a2ea771644d7944000dbe343f301.pdf
+        ├── f6dbb4fb6dcb48748849db32d70738f5.pdf
         └── test.pdf
