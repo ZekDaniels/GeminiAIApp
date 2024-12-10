@@ -16,9 +16,9 @@ integration_service = IntegrationService()
 
 @router.post("/", response_model=UploadIntegrationResponse)
 @handle_service_errors
-async def upload_pdf(file: UploadFile = File(...), db: AsyncSession = Depends(get_db)):
+async def create_integration(file: UploadFile = File(...), db: AsyncSession = Depends(get_db)):
     """
-    Upload a PDF document. The PDF file is processed, and a unique ID is generated.
+    Create the inrgeration. The PDF file is processed, and a unique ID is generated.
     
     - **file**: The PDF file to be uploaded.
     
