@@ -25,7 +25,7 @@ class FileHandler:
     async def save_file(self, file) -> str:
         """Save an uploaded file to disk."""
         unique_filename = self.generate_unique_filename(file.filename)
-        file_path = os.path.join(self.upload_dir, unique_filename)
+        file_path = os.path.normpath(os.path.join(self.upload_dir, unique_filename))  # Normalize path
         async with aiofiles.open(file_path, "wb") as buffer:
             await buffer.write(await file.read())
         logger.info("File saved: %s", file_path)
