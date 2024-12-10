@@ -7,8 +7,8 @@ class ConversationHistory(Base):
     __tablename__ = "conversation_history"
 
     id = Column(Integer, primary_key=True, index=True)
-    pdf_id = Column(Integer, ForeignKey("pdfs.id"), nullable=False)  # Updated table name to 'pdfs'
+    integration_id = Column(Integer, ForeignKey("integrations.id"), nullable=False)  # Updated table name to 'integrations'
     user_query = Column(Text, nullable=False)
     assistant_response = Column(Text, nullable=False)
 
-    pdf = relationship("PDF", back_populates="conversation_history")
+    integration = relationship("Integration", back_populates="conversation_history")

@@ -1,5 +1,5 @@
 # GeminiAIApp
-A FastAPI-based backend to upload, process PDFs, and chat using LLMs.
+A FastAPI-based backend to upload, process Integrations, and chat using LLMs.
 
 ## Features
 - Upload PDF files
@@ -12,12 +12,12 @@ A FastAPI-based backend to upload, process PDFs, and chat using LLMs.
 3. Run the server: uvicorn app.main:app --reload
 
 ## API Endpoints
-- `POST /v1/pdf`: Upload a PDF file.
-- `POST /v1/chat/{pdf_id}`: Chat with the content of the uploaded PDF.
+- `POST /v1/integration`: Upload a PDF file.
+- `POST /v1/chat/{integration_id}`: Chat with the content of the uploaded PDF.
 
 
 pytest
-pytest tests/pdf
-pytest tests/pdf/test_services.py
-pytest tests/pdf/test_services.py::test_save_pdf_to_disk
+pytest tests/integration
+pytest tests/integration/test_services.py
+pytest tests/integration/test_services.py::test_save_integration_to_disk
 

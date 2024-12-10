@@ -4,7 +4,7 @@ import logging
 import google.generativeai as genai
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from app.services.pdf_service import PDFService
+from app.services.integration_service import IntegrationService
 from app.models.chat import ConversationHistory
 from app.errors.chat_exceptions import ChatServiceException
 from app.decorators.chat_handle_errors import handle_chat_service_errors
@@ -29,43 +29,43 @@ class ChatService:
             raise ValueError("GEMINI_API_KEY environment variable is not set.")
         genai.configure(api_key=api_key)
         self.model = genai.GenerativeModel("gemini-1.5-flash")
-        self.pdf_service = PDFService()
+        self.integration_service = IntegrationService()
         logger.info("ChatService initialized with Generative AI model: gemini-1.5-flash")
 
     @handle_chat_service_errors
     @log_execution()
     async def generate_response(
-        self, pdf_id: int, user_query: str, db: AsyncSession, only_text: bool = False
+        self, integration_id: int, user_query: str, db: AsyncSession, only_text: bool = False
     ) -> str:
         """
         Generate a response to a user query based on the content of a specified PDF.
 
         Args:
-            pdf_id (int): The unique identifier of the PDF.
+            integration_id (int): The unique identifier of the Integration.
             user_query (str): The user's question or query.
             db (AsyncSession): The database session.
-            only_text (bool, optional): Whether to exclude PDF content from the prompt. Defaults to False.
+            only_text (bool, optional): Whether to exclude Integration content from the prompt. Defaults to False.
 
         Returns:
             str: The assistant's response.
         """
-        logger.info("Generating response for PDF ID: %d, User Query: %s", pdf_id, user_query)
-        pdf_content = await self._fetch_pdf_content(pdf_id, db)
-        conversation_history = await self._fetch_conversation_history(pdf_id, db)
+        logger.info("Generating response for Integration ID: %d, User Query: %s", integration_id, user_query)
+        pdf_content = await self._fetch_pdf_content(integration_id, db)
+        conversation_history = await self._fetch_conversation_history(integration_id, db)
         prompt = self._construct_prompt(conversation_history, user_query, pdf_content, only_text)
         assistant_response = await self._generate_response_from_model(prompt)
-        await self._save_conversation_history(pdf_id, user_query, assistant_response, db)
-        logger.info("Response successfully generated for PDF ID: %d", pdf_id)
+        await self._save_conversation_history(integration_id, user_query, assistant_response, db)
+        logger.info("Response successfully generated for Integration ID: %d", integration_id)
         return assistant_response
 
     @handle_chat_service_errors
     @log_execution()
-    async def _fetch_pdf_content(self, pdf_id: int, db: AsyncSession) -> str:
+    async def _fetch_pdf_content(self, integration_id: int, db: AsyncSession) -> str:
         """
-        Fetch the content of the specified PDF from the database.
+        Fetch the content of the specified Integration from the database.
 
         Args:
-            pdf_id (int): The unique identifier of the PDF.
+            integration_id (int): The unique identifier of the Integration.
             db (AsyncSession): The database session.
 
         Returns:
@@ -74,30 +74,30 @@ class ChatService:
         Raises:
             ValueError: If the PDF content is empty.
         """
-        logger.debug("Fetching PDF content for PDF ID: %d", pdf_id)
-        pdf = await self.pdf_service.get_pdf_by_id(pdf_id, db)
+        logger.debug("Fetching PDF content for Integration ID: %d", integration_id)
+        pdf = await self.integration_service.get_integration_by_id(integration_id, db)
         if not pdf.content:
-            logger.error("PDF content is empty for PDF ID: %d", pdf_id)
-            raise ValueError(f"PDF content is empty for PDF ID: {pdf_id}")
+            logger.error("PDF content is empty for Integration ID: %d", integration_id)
+            raise ValueError(f"PDF content is empty for Integration ID: {integration_id}")
         return pdf.content
 
     @handle_chat_service_errors
     @log_execution()
-    async def _fetch_conversation_history(self, pdf_id: int, db: AsyncSession) -> list:
+    async def _fetch_conversation_history(self, integration_id: int, db: AsyncSession) -> list:
         """
-        Fetch the conversation history for a specified PDF ID.
+        Fetch the conversation history for a specified PDIntegrationF ID.
 
         Args:
-            pdf_id (int): The unique identifier of the PDF.
+            integration_id (int): The unique identifier of the Integration.
             db (AsyncSession): The database session.
 
         Returns:
             list: A list of ConversationHistory objects.
         """
-        logger.debug("Fetching conversation history for PDF ID: %d", pdf_id)
-        result = await db.execute(select(ConversationHistory).where(ConversationHistory.pdf_id == pdf_id))
+        logger.debug("Fetching conversation history for Integration ID: %d", integration_id)
+        result = await db.execute(select(ConversationHistory).where(ConversationHistory.integration_id == integration_id))
         history = result.scalars().all()
-        logger.debug("Fetched %d conversation history entries for PDF ID: %d", len(history), pdf_id)
+        logger.debug("Fetched %d conversation history entries for Integration ID: %d", len(history), integration_id)
         return history
 
     @log_execution()
@@ -143,21 +143,21 @@ class ChatService:
 
     @log_execution()
     async def _save_conversation_history(
-        self, pdf_id: int, user_query: str, assistant_response: str, db: AsyncSession
+        self, integration_id: int, user_query: str, assistant_response: str, db: AsyncSession
     ):
         """
         Save the conversation history to the database.
 
         Args:
-            pdf_id (int): The unique identifier of the PDF.
+            integration_id (int): The unique identifier of the Integration.
             user_query (str): The user's query.
             assistant_response (str): The AI model's response.
             db (AsyncSession): The database session.
         """
-        logger.debug("Saving conversation history for PDF ID: %d", pdf_id)
+        logger.debug("Saving conversation history for Integration ID: %d", integration_id)
         conversation_entry = ConversationHistory(
-            pdf_id=pdf_id, user_query=user_query, assistant_response=assistant_response
+            integration_id=integration_id, user_query=user_query, assistant_response=assistant_response
         )
         db.add(conversation_entry)
         await db.commit()
-        logger.debug("Conversation history saved successfully for PDF ID: %d", pdf_id)
+        logger.debug("Conversation history saved successfully for Integration ID: %d", integration_id)

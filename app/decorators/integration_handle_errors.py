@@ -1,18 +1,18 @@
 from functools import wraps
 from inspect import iscoroutinefunction
 from fastapi import HTTPException, status
-from app.errors.pdf_exceptions import PDFNotFoundException
+from app.errors.integration_exceptions import IntegrationNotFoundException
 
 from functools import wraps
 from fastapi import HTTPException, status
-from app.errors.pdf_exceptions import PDFNotFoundException
+from app.errors.integration_exceptions import IntegrationNotFoundException
 
 def handle_service_errors(func):
     @wraps(func)
     async def wrapper(*args, **kwargs):
         try:
             return await func(*args, **kwargs)
-        except PDFNotFoundException as e:
+        except IntegrationNotFoundException as e:
             raise e.to_http_exception()
         except HTTPException as e:
             raise e

@@ -3,7 +3,7 @@
 from pydantic import BaseModel
 
 class ChatRequest(BaseModel):
-    pdf_id: int
+    integration_id: int
     query: str
 
 class ChatResponse(BaseModel):

@@ -14,9 +14,9 @@ class PDFServiceException(Exception):
         return HTTPException(status_code=self.http_status, detail=self.message)
 
 
-class PDFNotFoundException(PDFServiceException):
-    def __init__(self, pdf_id: int):
-        super().__init__(f"PDF with ID {pdf_id} not found.", http_status=status.HTTP_404_NOT_FOUND)
+class IntegrationNotFoundException(PDFServiceException):
+    def __init__(self, integration_id: int):
+        super().__init__(f"Integration with ID {integration_id} not found.", http_status=status.HTTP_404_NOT_FOUND)
 
 
 class PDFExtractionError(PDFServiceException):

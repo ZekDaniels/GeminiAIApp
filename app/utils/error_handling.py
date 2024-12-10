@@ -1,7 +1,7 @@
 import logging
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
-from app.errors.pdf_exceptions import PDFNotFoundException
+from app.errors.integration_exceptions import IntegrationNotFoundException
 
 logger = logging.getLogger("uvicorn.error")
 
@@ -15,11 +15,11 @@ async def custom_error_handler(request: Request, exc: Exception):
         content={"detail": "An unexpected error occurred. Please try again later."},
     )
 
-async def pdf_not_found_exception_handler(request: Request, exc: PDFNotFoundException):
+async def integration_not_found_exception_handler(request: Request, exc: IntegrationNotFoundException):
     """
-    Handle PDFNotFoundException with a custom message.
+    Handle IntegrationNotFoundException with a custom message.
     """
-    logger.warning(f"PDF not found: {exc.message}")
+    logger.warning(f"Integration not found: {exc.message}")
     return JSONResponse(
         status_code=status.HTTP_404_NOT_FOUND,
         content={"message": exc.message},
@@ -37,4 +37,4 @@ def setup_exception_handling(app: FastAPI):
             return await custom_error_handler(request, exc)
 
     # Register custom exception handlers
-    app.add_exception_handler(PDFNotFoundException, pdf_not_found_exception_handler)
+    app.add_exception_handler(IntegrationNotFoundException, integration_not_found_exception_handler)
