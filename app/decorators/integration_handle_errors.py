@@ -7,7 +7,7 @@ from functools import wraps
 from fastapi import HTTPException, status
 from app.errors.integration_exceptions import IntegrationNotFoundException
 
-def handle_service_errors(func):
+def handle_integration_service_errors(func):
     @wraps(func)
     async def wrapper(*args, **kwargs):
         try:

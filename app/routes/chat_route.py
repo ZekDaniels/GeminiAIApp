@@ -1,8 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.chat_service import ChatService
 from app.db.session import get_db
 from app.schemas.chat_schemas import ChatRequest, ChatResponse
+from app.decorators.chat_handle_errors import handle_chat_service_errors
+
 
 router = APIRouter(
     prefix="/v1/chat",
@@ -12,6 +14,7 @@ router = APIRouter(
 # Initialize services
 chat_service = ChatService()
 
+@handle_chat_service_errors
 @router.post("/chat_with_pdf", response_model=ChatResponse, status_code=200)
 async def chat_with_pdf(
     request: ChatRequest,
@@ -28,7 +31,7 @@ async def chat_with_pdf(
     )
     return ChatResponse(response=response_text)
 
-
+@handle_chat_service_errors
 @router.post("/chat_normal", response_model=ChatResponse, status_code=200)
 async def chat_normal(
     request: ChatRequest,

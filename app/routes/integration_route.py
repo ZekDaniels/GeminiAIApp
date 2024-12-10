@@ -5,7 +5,7 @@ from typing import List
 from app.schemas.integration_schemas import UploadIntegrationResponse, IntegrationResponse
 from app.services.integration_service import IntegrationService
 from app.db.session import get_db
-from app.decorators.integration_handle_errors import handle_service_errors
+from app.decorators.integration_handle_errors import handle_integration_service_errors
 
 router = APIRouter(
     prefix="/v1/integration",
@@ -15,7 +15,7 @@ integration_service = IntegrationService()
 
 
 @router.post("/", response_model=UploadIntegrationResponse)
-@handle_service_errors
+@handle_integration_service_errors
 async def create_integration(file: UploadFile = File(...), db: AsyncSession = Depends(get_db)):
     """
     Create the inrgeration. The PDF file is processed, and a unique ID is generated.
@@ -30,7 +30,7 @@ async def create_integration(file: UploadFile = File(...), db: AsyncSession = De
 
 
 @router.put("/{integration_id}", response_model=UploadIntegrationResponse)
-@handle_service_errors
+@handle_integration_service_errors
 async def update_pdf(
     integration_id: int = Path(..., title="Integration ID", description="The unique ID of the Integration to update"),
     file: UploadFile = File(...),
@@ -49,7 +49,7 @@ async def update_pdf(
 
 
 @router.delete("/{integration_id}", status_code=status.HTTP_204_NO_CONTENT)
-@handle_service_errors
+@handle_integration_service_errors
 async def delete_integration(
     integration_id: int = Path(..., title="Integration ID", description="The unique ID of the Integration to delete"),
     db: AsyncSession = Depends(get_db),
@@ -64,7 +64,7 @@ async def delete_integration(
 
 
 @router.get("/", response_model=List[IntegrationResponse])
-@handle_service_errors
+@handle_integration_service_errors
 async def list_integrations(db: AsyncSession = Depends(get_db)):
     """
     List all saved Integrations.
@@ -75,7 +75,7 @@ async def list_integrations(db: AsyncSession = Depends(get_db)):
     return [IntegrationResponse.from_model(pdf) for pdf in pdfs]
 
 @router.get("/{integration_id}", response_model=IntegrationResponse)
-@handle_service_errors
+@handle_integration_service_errors
 async def get_integration_by_id(integration_id: int, db: AsyncSession = Depends(get_db)):
     """
     Retrieve details of a specific Integration.

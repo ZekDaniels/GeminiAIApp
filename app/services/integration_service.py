@@ -11,7 +11,7 @@ from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 from app.models.integration import Integration
 from app.errors.integration_exceptions import IntegrationNotFoundException, PDFExtractionError
-from app.decorators.integration_handle_errors import handle_service_errors
+from app.decorators.integration_handle_errors import handle_integration_service_errors
 from app.core.config import settings
 from app.decorators.logging import log_execution
 
@@ -35,7 +35,7 @@ class IntegrationService:
     # Public Methods
     # ------------------------------
 
-    @handle_service_errors
+    @handle_integration_service_errors
     @log_execution()
     async def process_integration(self, file: UploadFile, db: AsyncSession) -> int:
         """
@@ -58,7 +58,7 @@ class IntegrationService:
         logger.info("Integration processing completed successfully for file: %s", file.filename)
         return integration_id
 
-    @handle_service_errors
+    @handle_integration_service_errors
     @log_execution()
     async def update_pdf(self, integration_id: int, file: UploadFile, db: AsyncSession) -> int:
         """
@@ -90,7 +90,7 @@ class IntegrationService:
         logger.info("Integration updated successfully with ID: %d", integration_id)
         return integration_record.id
 
-    @handle_service_errors
+    @handle_integration_service_errors
     @log_execution()
     async def delete_integration(self, integration_id: int, db: AsyncSession) -> None:
         """
@@ -107,7 +107,7 @@ class IntegrationService:
         await db.commit()
         logger.info("Integration deleted successfully with ID: %d", integration_id)
 
-    @handle_service_errors
+    @handle_integration_service_errors
     @log_execution()
     async def list_integrations(self, db: AsyncSession) -> list:
         """
@@ -125,7 +125,7 @@ class IntegrationService:
         logger.info("Fetched %d Integration records.", len(integration_list))
         return integration_list
 
-    @handle_service_errors
+    @handle_integration_service_errors
     @log_execution()
     async def get_integration_by_id(self, integration_id: int, db: AsyncSession) -> Integration:
         """
