@@ -1,6 +1,6 @@
 ### README
 
-# PDF Chat Service
+# GEMINIAIAPP
 
 This repository contains a **FastAPI-based application** for extracting, storing, and interacting with PDF content using AI-generated responses. It is built to handle PDF processing, AI-powered question answering, and robust database interactions.
 
