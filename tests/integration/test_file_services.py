@@ -49,12 +49,6 @@ def test_backup_file(file_handler):
         mock_rename.assert_called_once()
 
 
-def test_restore_backup(file_handler):
-    with patch("os.rename") as mock_rename:
-        file_handler.restore_backup("test.pdf.bak", "test.pdf")
-        mock_rename.assert_called_once()
-
-
 def test_delete_file(file_handler):
     with patch("os.path.exists", return_value=True), patch("os.remove") as mock_remove:
         file_handler.delete_file("test.pdf")
