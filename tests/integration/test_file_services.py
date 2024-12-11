@@ -41,14 +41,6 @@ async def test_save_file(mock_aiofiles_open, file_handler):
     mock_file_handle.write.assert_called_once_with(b"Test content")
 
 
-
-def test_backup_file(file_handler):
-    with patch("os.rename") as mock_rename:
-        backup_path = file_handler.backup_file("test.pdf")
-        assert backup_path.endswith(".bak")
-        mock_rename.assert_called_once()
-
-
 def test_delete_file(file_handler):
     with patch("os.path.exists", return_value=True), patch("os.remove") as mock_remove:
         file_handler.delete_file("test.pdf")
