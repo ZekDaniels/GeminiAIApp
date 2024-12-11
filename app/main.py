@@ -9,12 +9,12 @@ app = FastAPI(
     version="1.0.0",
 )
 
+setup_logging()
 setup_exception_handling(app)
-# setup_logging()
-if settings.debug:
+if settings.DEBUG:
     @app.get("/debug-info")
     async def debug_info():
-        return {"message": "Debugging is enabled", "log_level": settings.log_level}
+        return {"message": "Debugging is enabled", "LOG_LEVEL": settings.LOG_LEVEL}
 
 # Register routes
 app.include_router(integration_route.router)

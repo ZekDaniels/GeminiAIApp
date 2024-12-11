@@ -2,7 +2,7 @@ import os
 from app.core.config import settings
 from logging.config import dictConfig
 
-LOG_LEVEL = "DEBUG" if settings.debug else settings.log_level
+LOG_LEVEL = "DEBUG" if settings.DEBUG else settings.LOG_LEVEL
 
 
 # Dynamic log level based on settin

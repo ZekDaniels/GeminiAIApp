@@ -5,6 +5,7 @@ from app.services.ai_model_service import AIModelService
 from app.utils.prompt_builder import PromptBuilder
 from app.decorators.chat_handle_errors import handle_chat_service_errors
 from app.decorators.logging import log_execution
+from app.decorators.handle_transaction import handle_transaction
 
 logger = logging.getLogger("app")
 
@@ -16,6 +17,7 @@ class ChatService:
         self.ai_service = ai_service or AIModelService()
         logger.info("ChatService initialized.")
 
+    @handle_transaction()
     @handle_chat_service_errors
     @log_execution()
     async def generate_response(self, integration_id, user_query, db, only_text=False):
