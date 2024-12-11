@@ -42,8 +42,8 @@ This repository contains a **FastAPI-based application** for extracting, storing
 2. Create a virtual environment and activate it:
 
    ```bash
-   (Python 3.13.1)
-   python -m venv venv
+   
+   python -m venv venv # (Python 3.13.1)
    source venv/bin/activate  # For Linux/Mac
    source venv/Scripts/activate     # For Windows
    ```
