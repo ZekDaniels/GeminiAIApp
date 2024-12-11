@@ -20,6 +20,7 @@
 │   ├── decorators
 │   │   ├── __init__.py
 │   │   ├── chat_handle_errors.py
+│   │   ├── handle_transaction.py
 │   │   ├── integration_handle_errors.py
 │   │   └── logging.py
 │   ├── errors
@@ -40,12 +41,18 @@
 │   │   └── integration_schemas.py
 │   ├── services
 │   │   ├── __init.py
+│   │   ├── ai_model_service.py
 │   │   ├── chat_service.py
-│   │   └── integration_service.py
+│   │   ├── file_service.py
+│   │   ├── history_service.py
+│   │   ├── integration_service.py
+│   │   ├── pdf_content_service.py
+│   │   └── pdf_service.py
 │   └── utils
 │       ├── __init.py
 │       ├── error_handling.py
-│       └── logging.py
+│       ├── logging.py
+│       └── prompt_builder.py
 ├── directory_tree.txt
 ├── logs
 │   └── app.log
@@ -60,15 +67,9 @@
 │   ├── __init.py
 │   └── integration
 │       ├── __init.py
-│       ├── test_routes.py
-│       └── test_services.py
+│       ├── test_file_services.py
+│       ├── test_pdf_services.py
+│       └── test_routes.py
 └── uploads
     └── pdf_files
-        ├── 107.pdf
-        ├── 13e064acef0740a6a485f8e15ab4e8ba.pdf
-        ├── 4a4ea1227be54036810bcf0c2dab606f.pdf
-        ├── 57adbdcccb07417b840dbc97fc46b686.pdf
-        ├── 7f2802f5c1f94b93b13645fb3ab94902.pdf
-        ├── bea6a2ea771644d7944000dbe343f301.pdf
-        ├── f6dbb4fb6dcb48748849db32d70738f5.pdf
-        └── test.pdf
+        └── bdf88ea587054cedbff4014fdb1c9258.pdf
