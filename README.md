@@ -42,9 +42,10 @@ This repository contains a **FastAPI-based application** for extracting, storing
 2. Create a virtual environment and activate it:
 
    ```bash
+   (Python 3.13.1)
    python -m venv venv
    source venv/bin/activate  # For Linux/Mac
-   venv\Scripts\activate     # For Windows
+   source venv/Scripts/activate     # For Windows
    ```
 
 3. Install dependencies:
