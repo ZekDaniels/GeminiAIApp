@@ -155,13 +155,6 @@ Run the test suite using `pytest`:
 ```bash
 pytest
 ```
-
-Test coverage reports can be generated with:
-
-```bash
-pytest --cov=app tests/
-```
-
 ---
 
 ## License
