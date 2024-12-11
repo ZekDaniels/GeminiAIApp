@@ -35,6 +35,9 @@ class FileHandler:
         """Backup an existing file."""
         original_path = os.path.join(self.upload_dir, filename)
         backup_path = f"{original_path}.bak"
+        if not os.path.exists(original_path):
+            logger.warning("File not found for backup: %s", original_path)
+            return backup_path
         os.rename(original_path, backup_path)
         logger.info("Backup created: %s", backup_path)
         return backup_path
@@ -42,8 +45,22 @@ class FileHandler:
     def restore_backup(self, backup_path: str, original_filename: str):
         """Restore a file from its backup."""
         original_path = os.path.join(self.upload_dir, original_filename)
+        
+        # Ensure the backup file exists before restoring
+        if not os.path.exists(backup_path):
+            logger.warning("Backup file not found for restoration: %s", backup_path)
+            return
+
+        # If the target file already exists, delete it first
+        if os.path.exists(original_path):
+            logger.warning("Target file exists, removing it before restoring backup: %s", original_path)
+            os.remove(original_path)
+
+        # Rename the backup file to the original path
         os.rename(backup_path, original_path)
         logger.info("Backup restored: %s", original_path)
+
+
 
     def delete_file(self, filename: str):
         """Delete a file from disk."""

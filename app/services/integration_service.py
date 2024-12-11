@@ -1,4 +1,5 @@
 import logging
+import os
 from fastapi import UploadFile, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -47,22 +48,37 @@ class IntegrationService:
         """Update an existing Integration record and replace its file."""
         integration_record = await self.get_integration_by_id(integration_id, db)
         backup_path = self.file_handler.backup_file(integration_record.filename)
+        unique_filename = None  # Track the new file
 
         try:
+            # Save the new file
             unique_filename = await self.file_handler.save_file(file)
-            file_path = f"{settings.UPLOAD_DIR}/{unique_filename}"
+            file_path = os.path.join(settings.UPLOAD_DIR, unique_filename)
+
+            # Process the new PDF file
             pdf_data = await self.pdf_processor.extract_text(file_path)
             content = self.pdf_processor.preprocess_text(pdf_data["content"])
-
+            # Update the integration record with the new file details
             integration_record.filename = unique_filename
             integration_record.content = content
             integration_record.page_count = pdf_data["page_count"]
             await db.flush()
-            self.file_handler.delete_file(backup_path)
+
+            # Delete the backup file after successful update
+            self.file_handler.delete_file(os.path.basename(backup_path))
             return integration_record.id
+
         except Exception as e:
+            # Restore the backup file if an error occurs
             self.file_handler.restore_backup(backup_path, integration_record.filename)
+            
+            # Delete the new file if it was created
+            if unique_filename:
+                self.file_handler.delete_file(unique_filename)
+            
+            # Re-raise the exception after cleanup
             raise e
+
 
     @handle_transaction()
     @handle_integration_service_errors
